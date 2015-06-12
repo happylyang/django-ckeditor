@@ -63,6 +63,17 @@ class ImageUploadView(generic.View):
 
         url = utils.get_media_url(saved_path)
 
+        from qiniu import Auth
+        from qiniu import put_file
+        from utility import constants
+        access_key = constants.QINIU_API
+        secret_key = constants.QINIU_SK
+        q = Auth(access_key, secret_key)
+        bucket_name = "excake"
+        token = q.upload_token(bucket_name)
+        mime_type = "image/jpeg"
+        ret, info = put_file(token, "/".join(url.split('/')[3:]), default_storage.path(upload_filename), mime_type=mime_type)
+
         # Respond with Javascript sending ckeditor upload url.
         return HttpResponse("""
         <script type='text/javascript'>
